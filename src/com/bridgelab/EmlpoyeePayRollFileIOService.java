@@ -10,18 +10,44 @@ public class EmlpoyeePayRollFileIOService {
     public static String PAYROLL_FILE_NAME = "payroll-file.txt";
 
     public void writeData(List<EmployeePayRoll> employeePayrollDataList) {
-        final StringBuffer empBuffer = new StringBuffer();
-        employeePayrollDataList.forEach(new Consumer<EmployeePayRoll>() {
-            @Override
-            public void accept(EmployeePayRoll employee) {
-                String employeeDataString = employee.toString().concat("\n");
-                empBuffer.append(employeeDataString);
-            }
+        StringBuffer empBuffer = new StringBuffer();
+        employeePayrollDataList.forEach(employee -> {
+            String employeeDataString = employee.toString().concat("\n");
+            empBuffer.append(employeeDataString);
         });
         try {
             Files.write(Paths.get(PAYROLL_FILE_NAME), empBuffer.toString().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    // method to count entries in a file
+    public long countEntries() {
+        long entries = 0;
+        try {
+            entries = Files.lines(new File(PAYROLL_FILE_NAME).toPath()).count();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return entries;
+    }
+
+    // method to print entries in a file
+    public void printData() {
+        try {
+            Files.lines(new File(PAYROLL_FILE_NAME).toPath()).forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void readDataFromFile() {
+        try {
+            Files.lines(new File(PAYROLL_FILE_NAME).toPath()).map(line -> line.trim())
+                    .forEach(line -> System.out.println(line));
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 }

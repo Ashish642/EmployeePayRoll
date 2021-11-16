@@ -1,36 +1,72 @@
 package com.bridgelab;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class EmployeePayRollService {
 
-    public List<EmployeePayRoll> employeePayrollList = new ArrayList<>();
+    public EmployeePayRollService() {
 
-    public EmployeePayRollService(ArrayList<EmployeePayRoll> employeePayrollList) {
+    }
+
+    public enum IOService {
+        CONSOLE_IO, FILE_IO, DB_IO, REST_IO
+    }
+
+    private List<EmployeePayRoll> employeePayrollDataList;
+
+    public EmployeePayRollService(List<EmployeePayRoll> employeePayrollDataList) {
+        this.employeePayrollDataList = employeePayrollDataList;
     }
 
     public static void main(String[] args) {
-        System.out.println("WelCome to Employee Payroll Service");
         ArrayList<EmployeePayRoll> employeePayrollList = new ArrayList<EmployeePayRoll>();
         EmployeePayRollService employeePayrollService = new EmployeePayRollService(employeePayrollList);
         Scanner consoleInputReader = new Scanner(System.in);
-        employeePayrollService.readEmployeeData(consoleInputReader);
-        employeePayrollService.writeEmployeeData();
+        employeePayrollService.readEmployeePayrollData(consoleInputReader);
+        employeePayrollService.writeEmployeePayrollData(IOService.FILE_IO);
     }
 
-    private void writeEmployeeData() {
-        System.out.println("\nwriting employee payroll data to console\n" + employeePayrollList);
-    }
-
-    private void readEmployeeData(Scanner consoleInputReader) {
-        System.out.println("Enter Employee id: ");
+    // method to read data
+    private void readEmployeePayrollData(Scanner consoleInputReader) {
+        System.out.println("Enter Employee Id:");
         int id = consoleInputReader.nextInt();
-        System.out.println("Enter Employee name ");
-        String name = consoleInputReader.next();
-        System.out.println("Enter Employee salary ");
-        double salary = consoleInputReader.nextDouble();
-        employeePayrollList.add(new EmployeePayRoll(id, name, salary));
+        System.out.println("Enter Employee name:");
+        consoleInputReader.nextLine();
+        String name = consoleInputReader.nextLine();
+        System.out.println("Enter Employee salary:");
+        double salary = consoleInputReader.nextInt();
+        employeePayrollDataList.add(new EmployeePayRoll(id, name, salary));
+    }
+
+    // method to write data on console
+    public void writeEmployeePayrollData(IOService ioService) {
+        if (ioService.equals(IOService.CONSOLE_IO))
+            System.out.println("\nWriting Employee Payroll Roaster To console::\n" + employeePayrollDataList);
+        else if (ioService.equals(IOService.FILE_IO))
+            new EmployeePayrollFileIOService().writeData(employeePayrollDataList);
+    }
+
+    // method to count entries in a file
+    public long count(IOService ioService) {
+        if (ioService.equals(IOService.FILE_IO))
+            return new EmployeePayrollFileIOService().countEntries();
+        return 0;
+    }
+
+    // method to print entries from a file
+    public void printData(IOService ioService) {
+        if (ioService.equals(IOService.FILE_IO))
+            new EmployeePayrollFileIOService().printData();
+    }
+
+    public void readDataFromFile(IOService ioService) {
+        if (ioService.equals(IOService.CONSOLE_IO)) {
+            new EmployeePayrollFileIOService().readDataFromFile();
+        }
     }
 
 }
